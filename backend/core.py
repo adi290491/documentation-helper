@@ -10,9 +10,7 @@ from langchain_pinecone import PineconeVectorStore
 
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
-
-INDEX_NAME = "langchain-doc-index"
-
+INDEX_NAME = "document-helper"
 
 def run_llm(query: str):
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
@@ -26,7 +24,14 @@ def run_llm(query: str):
         retriever=docsearch.as_retriever(), combine_docs_chain=stuff_documents_chain
     )
     result = qa.invoke(input={"input": query})
-    return result
+
+    new_result = {
+        "result": result["answer"],
+        "query": result["input"],
+        "source_documents": result["context"]
+    }
+
+    return new_result
 
 
 if __name__ == "__main__":
